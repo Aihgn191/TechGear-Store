@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <header class="navbar-expand-md" th:fragment="navigation">
+        <div class="collapse navbar-collapse" id="navbar-menu">
+            <div class="navbar">
+                <div class="container-xl">
+                    <div class="row flex-fill align-items-center">
+                        <div class="col">
+                            <ul class="navbar-nav">
+                                <li class="nav-item" th:classappend="${page.menu == 'home'} ? 'active' : ''">
+                                    <a class="nav-link" th:href="@{/admin-v2}">
+                                        <span
+                                            class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                                            <img src="/static/img/admin/home.png" alt="Home" />
+                                        </span>
+                                        <span class="nav-link-title">
+                                            Home
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" th:classappend="${page.menu == 'users'} ? 'active' : ''">
+                                    <a class="nav-link" th:href="@{/admin-v2/users}">
+                                        <span
+                                            class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                                            <img src="/static/img/admin/users.png" alt="Users" />
+                                        </span>
+                                        <span class="nav-link-title">
+                                            Users
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" th:classappend="${page.menu == 'orders'} ? 'active' : ''">
+                                    <a class="nav-link" th:href="@{/admin-v2/orders}">
+                                        <span
+                                            class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                                            <img src="/static/img/admin/invoice.png" alt="Orders" />
+                                        </span>
+                                        <span class="nav-link-title">
+                                            Orders
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" th:classappend="${page.menu == 'products'} ? active : ''">
+                                    <a class="nav-link" href="/admin/product">
+                                        <span
+                                            class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                                            <img src="/static/img/admin/box.png" alt="Products" />
+                                        </span>
+                                        <span class="nav-link-title">
+                                            Products
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" th:classappend="${page.menu == 'categories'} ? active : ''">
+                                    <a class="nav-link" th:href="@{/admin-v2/categories}">
+                                        <span
+                                            class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                                            <img src="/static/img/admin/category.png" alt="Categories" />
+                                        </span>
+                                        <span class="nav-link-title">
+                                            Categories
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-2 d-none d-xxl-block">
+                            <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
+                                <form action="./" method="get" autocomplete="off" novalidate="">
+                                    <div class="input-icon">
+                                        <span class="input-icon-addon">
+                                            <!-- Download SVG icon from http://tabler-icons.io/i/search -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                                                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                <path d="M21 21l-6 -6"></path>
+                                            </svg>
+                                        </span>
+                                        <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</body>
+
+</html>
