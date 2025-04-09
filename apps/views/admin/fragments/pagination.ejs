@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+</head>
+
+<body>
+    <ul class="pagination m-0 ms-auto" id="pagination-footer">
+        <th:block th:each="i : ${#numbers.sequence(1, page.totalPage)}">
+            <li class="page-item" th:classappend="${i == 1} ? 'active': ''">
+                <a class="page-link pe-auto" th:attr="data-page=${i}" th:text="${i}"></a>
+            </li>
+        </th:block>
+    </ul>
+</body>
+
+</html>

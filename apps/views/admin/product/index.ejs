@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><%- include('../fragments/head') %></head>
+
+<head>
+
+</head>
+
+<body>
+    <header><%- include('../fragments/header') %></header>
+    <header><%- include('../fragments/nav') %></header>
+
+    <div id="app" class="page-wrapper">
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">Products</h2>
+                    </div>
+                    <div class="col-auto ms-auto d-print-none">
+                        <div class="d-flex">
+                            <input type="search" id="searchInput" v-model="searchQuery" @input="filterProducts"
+                                class="form-control d-inline-block w-9 me-3" placeholder="Search product…" name="s">
+                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new-product">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 5l0 14"></path>
+                                    <path d="M5 12l14 0"></path>
+                                </svg>
+                                New product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="container-xl">
+                <!-- Khi có sản phẩm -->
+                <h3 v-if="!products.length && !filteredProducts.length">Đang tải...</h3>
+                <div v-if="filteredProducts.length > 0" class="card">
+                    <div class="card-body">
+                        <div id="table-default" class="table-responsive">
+                            <table class="table table-vcenter card-table table-striped" id="table-list">
+                                <thead>
+                                    <tr>
+                                        <th><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                class="icon icon-tabler icons-tabler-outline icon-tabler-album">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" />
+                                                <path d="M12 4v7l2 -2l2 2v-7" />
+                                            </svg></th>
+                                        <th><button class="table-sort" @click="sort('ten')">Name</button></th>
+                                        <th><button class="table-sort" @click="sort('gia')">Price</button></th>
+                                        <th><button class="table-sort" @click="sort('category_id')">Categories</button></th>
+                                        <th><button class="table-sort" @click="sort('date')">Date</button></th>
+                                        <th><button class="table-sort" @click="sort('soluong')">Quantity</button></th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-tbody">
+                                    <tr v-for="product in filteredProducts" :key="product.id">
+                                        <td><img :src="'/static/img/Product/' + product.img1" width="40" /></td>
+                                        <td class="sort-name">{{ product.ten }}</td>
+                                        <td class="sort-price" :data-price="product.gia">{{ product.gia }}$</td>
+                                        <td class="sort-categories">{{ getCategoryName(product.category_id) }}</td>
+                                        <td class="sort-date">{{ product.date }}</td>
+                                        <td class="sort-quantity">{{ product.soluong }}</td>
+                                        <td>
+                                            <div class="btn-list flex-nowrap">
+                                                <a :data-id="product.id" class="btn btn-rss w-100 btn-icon edit-product" data-bs-toggle="modal"
+                                                    data-bs-target="#edit-product">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                        class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                        <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                                        <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                                                        <path d="M16 5l3 3" />
+                                                    </svg>
+                                                </a>
+                                                <a :data-id="product._id" class="btn btn-youtube w-100 btn-icon" @click="deleteProduct">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                        class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                        <path d="M4 7l16 0" />
+                                                        <path d="M10 11l0 6" />
+                                                        <path d="M14 11l0 6" />
+                                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex align-items-center">
+                        <p class="m-0 text-secondary">Showing 1 to 10 entries</p>
+                        <ul><%- include('../fragments/pagination') %></ul>
+                    </div>
+                </div>
+                <!-- Khi không có sản phẩm -->
+                <div v-else-if="products.length > 0 && filteredProducts.length === 0" class="empty">
+                    <p class="empty-title">No products found</p>
+                    <p class="empty-subtitle text-secondary">Try adjusting your search or filter to find what you're looking for.</p>
+                    <div class="empty-action">
+                        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new-product">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M12 5l0 14"></path>
+                                <path d="M5 12l14 0"></path>
+                            </svg>
+                            Add your first product
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div><%- include('../fragments/modal') %></div>
+    </div>
+
+    <footer><%- include('../fragments/footer') %></footer>
+    <div><%- include('../fragments/foot') %></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="/static/js/products/custom.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                products: [],
+                filteredProducts: [],
+                categories: [],
+                producers: [],
+                searchQuery: '',
+                sortKey: '',
+                sortOrder: 1,
+                newProduct: {
+                    ten: '',
+                    mota: '',
+                    donvitinh: 'Cái',
+                    gia: 0,
+                    soluong: 1,
+                    category_id: '',
+                    producer_id: '',
+                    date: new Date()
+                },
+                editProduct: {
+                    _id: '',
+                    ten: '',
+                    mota: '',
+                    donvitinh: '',
+                    gia: 0,
+                    soluong: 0,
+                    giamgia: 0,
+                    category_id: '',
+                    producer_id: '',
+                    note: '',
+                    date: null,
+                    img1: null,
+                    img2: null,
+                    img3: null
+                },
+                files: {
+                    img1: null,
+                    img2: null,
+                    img3: null
+                }
+            },
+            mounted() {
+                this.fetchCategories();
+                this.fetchProducers();
+                this.fetchProducts();
+            },
+            methods: {
+                async fetchProducts() {
+                    try {
+                        const response = await fetch('/api/product');
+                        if (response.ok) {
+                            this.products = await response.json();
+                            console.log('Dữ liệu sản phẩm từ API:', this.products);
+                            console.log('Sản phẩm đầu tiên:', this.products[0]);
+                            this.filteredProducts = [...this.products];
+                        } else {
+                            console.error('Không thể lấy danh sách sản phẩm');
+                        }
+                    } catch (err) {
+                        console.error('Lỗi khi lấy sản phẩm:', err);
+                    }
+                },
+                async fetchCategories() {
+                    try {
+                        const response = await fetch('/api/category');
+                        if (response.ok) {
+                            this.categories = await response.json();
+                            console.log('Danh mục:', this.categories);
+                        } else {
+                            console.error('Không thể lấy danh mục');
+                        }
+                    } catch (err) {
+                        console.error('Lỗi khi lấy danh mục:', err);
+                    }
+                },
+                async fetchProducers() {
+                    try {
+                        const response = await fetch('/api/producer');
+                        if (response.ok) {
+                            this.producers = await response.json();
+                        } else {
+                            console.error('Không thể lấy nhà sản xuất');
+                        }
+                    } catch (err) {
+                        console.error('Lỗi khi lấy nhà sản xuất:', err);
+                    }
+                },
+                getCategoryName(categoryId) {
+                    const category = this.categories.find(cat => cat._id === categoryId);
+                    return category ? category.name : 'N/A';
+                },
+                filterProducts() {
+                    const query = this.searchQuery.toLowerCase();
+                    this.filteredProducts = this.products.filter(product =>
+                        product.ten.toLowerCase().includes(query) ||
+                        this.getCategoryName(product.category_id).toLowerCase().includes(query)
+                    );
+                },
+                sort(key) {
+                    if (this.sortKey === key) {
+                        this.sortOrder *= -1;
+                    } else {
+                        this.sortKey = key;
+                        this.sortOrder = 1;
+                    }
+                    this.filteredProducts.sort((a, b) => {
+                        let valueA = a[key];
+                        let valueB = b[key];
+                        if (key === 'category_id') {
+                            valueA = this.getCategoryName(a.category_id);
+                            valueB = this.getCategoryName(b.category_id);
+                        }
+                        if (typeof valueA === 'string') {
+                            return this.sortOrder * valueA.localeCompare(valueB);
+                        }
+                        return this.sortOrder * (valueA - valueB);
+                    });
+                },
+                handleFileUpload(event, fieldName) {
+                    this.files[fieldName] = event.target.files[0];
+                },
+                async submitProduct() {
+                    try {
+                        const formData = new FormData();
+                        for (const [key, value] of Object.entries(this.newProduct)) {
+                            formData.append(key, value);
+                        }
+                        if (this.files.img1) formData.append('img1', this.files.img1);
+                        if (this.files.img2) formData.append('img2', this.files.img2);
+                        if (this.files.img3) formData.append('img3', this.files.img3);
+
+                        const response = await fetch('/api/product/add', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        if (response.ok) {
+                            const result = await response.json();
+                            if (result.success) {
+                                alert('Sản phẩm đã được tạo thành công!');
+                                this.resetForm();
+                                this.fetchProducts();
+                                $('#new-product').modal('hide');
+                            }
+                        } else {
+                            console.error('Không thể tạo sản phẩm');
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi gửi sản phẩm:', error);
+                        alert('Lỗi khi tạo sản phẩm: ' + error.message);
+                    }
+                },
+                resetForm() {
+                    this.newProduct = {
+                        ten: '',
+                        mota: '',
+                        donvitinh: 'Cái',
+                        gia: 0,
+                        soluong: 1,
+                        category_id: '',
+                        producer_id: '',
+                        date: new Date()
+                    };
+                    this.files = {
+                        img1: null,
+                        img2: null,
+                        img3: null
+                    };
+                    document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
+                },
+                validPrice(value) {
+                    if (value < 0) {
+                        return 0;
+                    }
+                    return value;
+                },
+                openEditModal(product) {
+                    console.log('Dữ liệu sản phẩm:', JSON.stringify(product, null, 2));
+                    this.editProduct = {
+                        _id: product._id || '',
+                        ten: product.ten || '',
+                        mota: product.mota || '',
+                        donvitinh: product.donvitinh || 'Cái',
+                        gia: Number(product.gia) || 0,
+                        soluong: Number(product.soluong) || 0,
+                        giamgia: Number(product.giamgia) || 0,
+                        category_id: product.category_id ? String(product.category_id) : '',
+                        producer_id: product.producer_id ? String(product.producer_id) : '',
+                        note: product.note || '',
+                        date: product.date || null,
+                        img1: product.img1 || null,
+                        img2: product.img2 || null,
+                        img3: product.img3 || null
+                    };
+                    console.log('editProduct sau khi ánh xạ:', JSON.stringify(this.editProduct, null, 2));
+                    setTimeout(() => {
+                        $('#edit-product').modal('show');
+                    }, 100);
+                },
+                async updateProduct() {
+                    try {
+                        // Loại bỏ _id khỏi dữ liệu gửi đi
+                        const { _id, ...dataToSend } = this.editProduct;
+                        dataToSend.date = this.editProduct.date ? new Date(this.editProduct.date).toISOString() : null;
+
+                        // Kiểm tra dữ liệu bắt buộc
+                        if (!dataToSend.ten || dataToSend.ten.trim() === '') {
+                            alert('Tên sản phẩm không được để trống!');
+                            return;
+                        }
+                        if (dataToSend.gia === undefined || dataToSend.gia < 0) {
+                            alert('Giá sản phẩm không hợp lệ!');
+                            return;
+                        }
+                        if (dataToSend.soluong === undefined || dataToSend.soluong < 0) {
+                            alert('Số lượng sản phẩm không hợp lệ!');
+                            return;
+                        }
+
+                        console.log('Dữ liệu gửi đi:', dataToSend);
+                        const response = await fetch(`/api/product/update/${this.editProduct._id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(dataToSend)
+                        });
+
+                        console.log('Phản hồi từ API:', response);
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Kết quả:', result);
+                            if (result.success) {
+                                alert('Sản phẩm đã được cập nhật thành công!');
+                                this.fetchProducts();
+                                $('#edit-product').modal('hide');
+                            } else {
+                                console.error('Không thể cập nhật sản phẩm:', result.message);
+                                alert('Không thể cập nhật sản phẩm: ' + result.message);
+                            }
+                        } else {
+                            console.error('Không thể cập nhật sản phẩm, mã lỗi:', response.status);
+                            alert('Không thể cập nhật sản phẩm, mã lỗi: ' + response.status);
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi cập nhật sản phẩm:', error);
+                        alert('Lỗi khi cập nhật sản phẩm: ' + error.message);
+                    }
+                },
+                async deleteProduct(event) {
+                    const productId = event.currentTarget.getAttribute('data-id');
+                    const product = this.products.find(p => p._id === productId);
+                    if (!product) {
+                        alert('Không tìm thấy sản phẩm để xóa!');
+                        return;
+                    }
+
+                    // Xác nhận trước khi xóa
+                    if (!confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${product.ten}" (ID: ${productId}) không?`)) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/api/product/del/${productId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        console.log('Phản hồi từ API xóa:', response);
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Kết quả xóa:', result);
+                            if (result.success) {
+                                alert('Sản phẩm đã được xóa thành công!');
+                                // Làm mới danh sách sản phẩm
+                                await this.fetchProducts();
+                            } else {
+                                console.error('Không thể xóa sản phẩm:', result.message);
+                                alert('Không thể xóa sản phẩm: ' + result.message);
+                            }
+                        } else {
+                            console.error('Không thể xóa sản phẩm, mã lỗi:', response.status);
+                            alert('Không thể xóa sản phẩm, mã lỗi: ' + response.status);
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi xóa sản phẩm:', error);
+                        alert('Lỗi khi xóa sản phẩm: ' + error.message);
+                    }
+                }
+            },
+            watch: {
+                'newProduct.gia'(newVal) {
+                    this.newProduct.gia = this.validPrice(newVal);
+                },
+                'newProduct.soluong'(newVal) {
+                    this.newProduct.soluong = this.validPrice(newVal);
+                },
+                'editProduct.gia'(newVal) {
+                    this.editProduct.gia = this.validPrice(newVal);
+                },
+                'editProduct.soluong'(newVal) {
+                    this.editProduct.soluong = this.validPrice(newVal);
+                },
+                'editProduct.giamgia'(newVal) {
+                    if (newVal < 0) this.editProduct.giamgia = 0;
+                    if (newVal > 100) this.editProduct.giamgia = 100;
+                }
+            }
+        });
+        function validPrice(input) {
+            if (input.value < 0) {
+                input.value = 0;
+                alert("Vui lòng nhập số không âm");
+            }
+        }
+    </script>
+</body>
+
+</html>
